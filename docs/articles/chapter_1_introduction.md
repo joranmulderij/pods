@@ -1,3 +1,5 @@
+# Chapter 1 - Introduction
+
 This series of articles is a deep dive into State Management, different approaches, their upsides and downsides, as well as providing justification for the design choices of the `pods` package for dart.
 
 > Disclaimer: this is mostly an experiment. I let my thoughts run wild, come up with ideas based on things that I have found to work or not work in my own experience building Flutter apps and using a number of state management approaches and libraries.
@@ -19,4 +21,4 @@ It is this distinction that is part of the motivation for the existence of the s
 
 For this reason it is foolish to try to make this type of state go through the widget tree, even if a nice-to-use library is used to make this process simpler. This state is inherently global, right? Server state is global, right? The main goal of the client part of the state machine is to handle caching, interactions with local state, etc. Don't try to make your beautiful state logic fit into the shape that your UI should look. Trying to make your state flow match the widget tree is just an unnecessary restriction that can come to bite you when it doesn't perfectly fit.
 
-In [Chapter 2 - Reactivity](chapter_2_reactivity) we will look at Reactivity.
+In [the next chapter](chapter_2_reactivity) we will look at Reactivity.
