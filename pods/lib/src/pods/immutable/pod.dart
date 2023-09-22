@@ -7,6 +7,8 @@ class Pod<T> {
 
   final AutoDisposeProvider<T> _provider;
 
+  AutoDisposeProvider<T> get provider => _provider;
+
   AutoDisposeProvider<T> call() => _provider;
 }
 

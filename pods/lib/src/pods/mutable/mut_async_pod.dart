@@ -42,7 +42,7 @@ class MutAsyncPodNotifier<T> extends AutoDisposeAsyncNotifier<T> {
     state = AsyncValue.data(value);
   }
 
-  Future<void> delete() async {
+  Future<void> reset() async {
     final value = await onRead(ref);
     state = AsyncValue.data(value);
   }
