@@ -6,3 +6,4 @@ export 'src/pods/mutable/mut_async_pod.dart';
 export 'src/pods/mutable/mut_fam_async_pod.dart';
 export 'src/pods/mutable/mut_fam_pod.dart';
 export 'src/pods/mutable/mut_pod.dart';
+export 'src/pods/pod_ref.dart';

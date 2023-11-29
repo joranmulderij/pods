@@ -1,14 +1,17 @@
+import 'package:pods/pods.dart';
 import 'package:riverpod/riverpod.dart';
 
 class FamAsyncPod<T, A> {
-  FamAsyncPod(this.onRead)
-      : _provider = AutoDisposeFutureProviderFamily(onRead);
-
-  final Future<T> Function(AutoDisposeFutureProviderRef<T> ref, A arg) onRead;
+  FamAsyncPod(
+    Future<T> Function(StateRef ref, A arg) onRead,
+  ) : _provider =
+            AutoDisposeFutureProviderFamily((ref, arg) => onRead(ref.s, arg));
 
   final AutoDisposeFutureProviderFamily<T, A> _provider;
 
-  AutoDisposeFutureProvider<T> call(A arg) => _provider(arg);
+  AsyncValue<T> read(StateRef ref, A arg) => ref.read(_provider(arg));
+  Future<T> readFuture(StateRef ref, A arg) => ref.read(_provider(arg).future);
 
-  Refreshable<Future<T>> future(A arg) => _provider(arg).future;
+  AsyncValue<T> watch(StateRef ref, A arg) => ref.read(_provider(arg));
+  Future<T> watchFuture(StateRef ref, A arg) => ref.read(_provider(arg).future);
 }

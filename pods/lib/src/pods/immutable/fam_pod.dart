@@ -1,11 +1,13 @@
+import 'package:pods/pods.dart';
 import 'package:riverpod/riverpod.dart';
 
 class FamPod<T, A> {
-  FamPod(this.onRead) : _provider = AutoDisposeProviderFamily(onRead);
-
-  final T Function(AutoDisposeProviderRef<T> ref, A arg) onRead;
+  FamPod(T Function(AutoDisposeProviderRef<T> ref, A arg) onRead)
+      : _provider = AutoDisposeProviderFamily(onRead);
 
   final AutoDisposeProviderFamily<T, A> _provider;
 
-  AutoDisposeProvider<T> call(A arg) => _provider(arg);
+  T read(StateRef ref, A arg) => ref.read(_provider(arg));
+
+  T watch(StateRef ref, A arg) => ref.watch(_provider(arg));
 }

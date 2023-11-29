@@ -13,6 +13,8 @@ dependencies:
   meta: ^1.9.1
   pods:
     path: ../pods
+  flutter:
+    sdk: flutter
   # path: ^1.8.0
 
 dev_dependencies:

@@ -14,34 +14,44 @@ extension on Cachable {
   }
 }
 
-MutFamAsyncPod<T, A> cachingMutFamAsyncPod<T extends Cachable, A>(
-  MutFamAsyncPod<T, A> primaryPod,
-  MutFamAsyncPod<T?, A> cachePod, {
-  Duration? maxCacheAge,
-  required A defaultArg,
-}) {
-  return MutFamAsyncPod(
-    onCreate: (ref, value) {
-      final notifier = ref.read(primaryPod(defaultArg).notifier);
-      return notifier.create(value);
-    },
-    onRead: (ref, arg) async {
-      final cache = await ref.read(cachePod(arg).future);
-      if (cache != null && !cache.isOld(maxCacheAge)) {
-        return cache;
-      }
-      return await ref.read(primaryPod(arg).future);
-    },
-    onDelete: (ref, arg) async {
-      await ref.read(primaryPod(arg).notifier).delete();
-      await ref.read(cachePod(arg).notifier).delete();
-    },
-    onUpdate: (ref, arg, value) async {
-      await ref.read(primaryPod(arg).notifier).put(value);
-      await ref.read(cachePod(arg).notifier).put(value);
-      return null;
-    },
-  );
+class CachingMutFamAsyncPod<T extends Cachable, A>
+    extends MutFamAsyncPod<T, A> {
+  CachingMutFamAsyncPod({
+    required this.cachePod,
+    required this.primaryPod,
+    this.maxCacheAge,
+  });
+
+  final MutFamAsyncPod<T, A> primaryPod;
+  final MutFamAsyncPod<T?, A> cachePod;
+  final Duration? maxCacheAge;
+
+  @override
+  Future<A> onCreate(StateRef ref, T value) {
+    return primaryPod.create(ref, value);
+  }
+
+  @override
+  Future<void> onDelete(StateRef ref, A arg) async {
+    await primaryPod.delete(ref, arg);
+    await cachePod.delete(ref, arg);
+  }
+
+  @override
+  Future<T> onRead(StateRef ref, A arg) async {
+    final cache = await cachePod.readFuture(ref, arg);
+    if (cache != null && !cache.isOld(maxCacheAge)) {
+      return cache;
+    }
+    return await primaryPod.readFuture(ref, arg);
+  }
+
+  @override
+  Future<T?> onUpdate(StateRef ref, A arg, T value) async {
+    await primaryPod.update(ref, arg, value);
+    await cachePod.update(ref, arg, value);
+    return null;
+  }
 }
 
 MutAsyncPod<T> cachingMutAsyncPod<T extends Cachable>(
@@ -51,19 +61,19 @@ MutAsyncPod<T> cachingMutAsyncPod<T extends Cachable>(
 }) {
   return MutAsyncPod(
     onRead: (ref) async {
-      final cache = await ref.read(cachePod().future);
+      final cache = await cachePod.readFuture(ref);
       if (cache != null && !cache.isOld(maxCacheAge)) {
         return cache;
       }
-      return await ref.read(primaryPod().future);
+      return await primaryPod.readFuture(ref);
     },
     onReset: (ref) async {
-      await ref.read(primaryPod().notifier).reset();
-      await ref.read(cachePod().notifier).reset();
+      await primaryPod.reset(ref);
+      await cachePod.reset(ref);
     },
     onUpdate: (ref, value) async {
-      await ref.read(primaryPod().notifier).put(value);
-      await ref.read(cachePod().notifier).put(value);
+      await primaryPod.put(ref, value);
+      await cachePod.put(ref, value);
     },
   );
 }
