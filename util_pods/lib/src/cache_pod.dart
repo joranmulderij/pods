@@ -27,18 +27,18 @@ class CachingMutFamAsyncPod<T extends Cachable, A>
   final Duration? maxCacheAge;
 
   @override
-  Future<A> onCreate(StateRef ref, T value) {
+  Future<A> onCreate(PodRef ref, T value) {
     return primaryPod.create(ref, value);
   }
 
   @override
-  Future<void> onDelete(StateRef ref, A arg) async {
+  Future<void> onDelete(PodRef ref, A arg) async {
     await primaryPod.delete(ref, arg);
     await cachePod.delete(ref, arg);
   }
 
   @override
-  Future<T> onRead(StateRef ref, A arg) async {
+  Future<T> onRead(PodRef ref, A arg) async {
     final cache = await cachePod.readFuture(ref, arg);
     if (cache != null && !cache.isOld(maxCacheAge)) {
       return cache;
@@ -47,7 +47,7 @@ class CachingMutFamAsyncPod<T extends Cachable, A>
   }
 
   @override
-  Future<T?> onUpdate(StateRef ref, A arg, T value) async {
+  Future<T?> onUpdate(PodRef ref, A arg, T value) async {
     await primaryPod.update(ref, arg, value);
     await cachePod.update(ref, arg, value);
     return null;

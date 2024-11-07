@@ -3,31 +3,31 @@ import 'package:riverpod/riverpod.dart';
 
 abstract class MutFamPod<T, A> implements FamPod<T, A> {
   factory MutFamPod({
-    required T Function(StateRef ref, A arg) onRead,
-    required void Function(StateRef ref, A arg, T value) onUpdate,
-    required void Function(StateRef ref, A arg) onDelete,
-    required void Function(StateRef ref, A arg, T value) onCreate,
+    required T Function(PodRef ref, A arg) onRead,
+    required void Function(PodRef ref, A arg, T value) onUpdate,
+    required void Function(PodRef ref, A arg) onDelete,
+    required void Function(PodRef ref, A arg, T value) onCreate,
   }) = _RiverpodMutFamPod;
 
   MutFamPod._();
 
   @override
-  T read(StateRef ref, A arg);
+  T read(PodRef ref, A arg);
 
   @override
-  T watch(StateRef ref, A arg);
+  T watch(PodRef ref, A arg);
 
   void listen(
-    StateRef ref,
+    PodRef ref,
     A arg,
     void Function(T? previous, T next) listener,
   );
 
-  void delete(StateRef ref, A arg);
+  void delete(PodRef ref, A arg);
 
-  void update(StateRef ref, A arg, T value);
+  void update(PodRef ref, A arg, T value);
 
-  void create(StateRef ref, A arg, T value);
+  void create(PodRef ref, A arg, T value);
 
   MutPod<T> child(A arg) {
     return MutPod<T>.simple(
@@ -41,10 +41,10 @@ abstract class MutFamPod<T, A> implements FamPod<T, A> {
 
 class _RiverpodMutFamPod<T, A> extends MutFamPod<T, A> {
   _RiverpodMutFamPod({
-    required T Function(StateRef, A) onRead,
-    required void Function(StateRef, A, T) onUpdate,
-    required void Function(StateRef, A) onDelete,
-    required void Function(StateRef, A, T) onCreate,
+    required T Function(PodRef, A) onRead,
+    required void Function(PodRef, A, T) onUpdate,
+    required void Function(PodRef, A) onDelete,
+    required void Function(PodRef, A, T) onCreate,
   })  : _provider = AutoDisposeNotifierProviderFamily(
           () => _MutFamPodNotifier(onRead, onUpdate, onDelete),
         ),
@@ -54,17 +54,17 @@ class _RiverpodMutFamPod<T, A> extends MutFamPod<T, A> {
   final AutoDisposeNotifierProviderFamily<_MutFamPodNotifier<T, A>, T, A>
       _provider;
 
-  final void Function(StateRef, A, T) _onCreate;
+  final void Function(PodRef, A, T) _onCreate;
 
   @override
-  T read(StateRef ref, A arg) => ref.read(_provider(arg));
+  T read(PodRef ref, A arg) => ref.read(_provider(arg));
 
   @override
-  T watch(StateRef ref, A arg) => ref.watch(_provider(arg));
+  T watch(PodRef ref, A arg) => ref.watch(_provider(arg));
 
   @override
   void listen(
-    StateRef ref,
+    PodRef ref,
     A arg,
     void Function(T? previous, T next) listener,
   ) {
@@ -72,17 +72,17 @@ class _RiverpodMutFamPod<T, A> extends MutFamPod<T, A> {
   }
 
   @override
-  void delete(StateRef ref, A arg) {
+  void delete(PodRef ref, A arg) {
     ref.read(_provider(arg).notifier)._delete();
   }
 
   @override
-  void update(StateRef ref, A arg, T value) {
+  void update(PodRef ref, A arg, T value) {
     ref.read(_provider(arg).notifier)._update(value);
   }
 
   @override
-  void create(StateRef ref, A arg, T value) {
+  void create(PodRef ref, A arg, T value) {
     _onCreate(ref, arg, value);
   }
 }
@@ -90,9 +90,9 @@ class _RiverpodMutFamPod<T, A> extends MutFamPod<T, A> {
 class _MutFamPodNotifier<T, A> extends AutoDisposeFamilyNotifier<T, A> {
   _MutFamPodNotifier(this._onRead, this._onUpdate, this._onDelete);
 
-  final T Function(StateRef ref, A arg) _onRead;
-  final void Function(StateRef ref, A arg, T value) _onUpdate;
-  final void Function(StateRef ref, A arg) _onDelete;
+  final T Function(PodRef ref, A arg) _onRead;
+  final void Function(PodRef ref, A arg, T value) _onUpdate;
+  final void Function(PodRef ref, A arg) _onDelete;
 
   void _delete() {
     _onDelete(ref.s, arg);

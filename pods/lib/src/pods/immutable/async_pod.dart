@@ -7,9 +7,9 @@ class AsyncPod<T> {
 
   final AutoDisposeFutureProvider<T> _provider;
 
-  AsyncValue<T> read(StateRef ref) => ref.read(_provider);
-  Future<T> readFuture(StateRef ref) => ref.read(_provider.future);
+  AsyncValue<T> read(PodRef ref) => ref.read(_provider);
+  Future<T> readFuture(PodRef ref) => ref.read(_provider.future);
 
-  AsyncValue<T> watch(StateRef ref) => ref.read(_provider);
-  Future<T> watchFuture(StateRef ref) => ref.read(_provider.future);
+  AsyncValue<T> watch(PodRef ref) => ref.read(_provider);
+  Future<T> watchFuture(PodRef ref) => ref.read(_provider.future);
 }

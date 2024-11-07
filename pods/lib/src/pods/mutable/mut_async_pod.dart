@@ -4,31 +4,31 @@ import 'package:riverpod/riverpod.dart';
 
 abstract class MutAsyncPod<T> implements AsyncPod<T> {
   factory MutAsyncPod({
-    required Future<T> Function(StateRef ref) onRead,
-    Future<void> Function(StateRef ref, T value)? onUpdate,
-    Future<void> Function(StateRef ref)? onReset,
+    required Future<T> Function(PodRef ref) onRead,
+    Future<void> Function(PodRef ref, T value)? onUpdate,
+    Future<void> Function(PodRef ref)? onReset,
   }) = _RiverpodMutAsyncPod;
 
   MutAsyncPod._();
 
   factory MutAsyncPod.simple({
-    required AsyncValue<T> Function(StateRef ref) read,
-    required Future<T> Function(StateRef ref) readFuture,
-    required AsyncValue<T> Function(StateRef ref) watch,
-    required Future<T> Function(StateRef ref) watchFuture,
-    required Future<void> Function(StateRef ref, T value) update,
-    required Future<void> Function(StateRef ref) reset,
+    required AsyncValue<T> Function(PodRef ref) read,
+    required Future<T> Function(PodRef ref) readFuture,
+    required AsyncValue<T> Function(PodRef ref) watch,
+    required Future<T> Function(PodRef ref) watchFuture,
+    required Future<void> Function(PodRef ref, T value) update,
+    required Future<void> Function(PodRef ref) reset,
     required void Function(
-      StateRef ref,
+      PodRef ref,
       ListenerFunction<AsyncValue<T>> listener,
     ) listen,
   }) = _SimpleMutAsyncPod;
 
-  Future<void> update(StateRef ref, T value);
+  Future<void> update(PodRef ref, T value);
 
-  void reset(StateRef ref);
+  void reset(PodRef ref);
 
-  void listen(StateRef ref, ListenerFunction<AsyncValue<T>> listener);
+  void listen(PodRef ref, ListenerFunction<AsyncValue<T>> listener);
 
   MutPod<T> sync(T Function() defaultValue) {
     return MutPod<T>.simple(
@@ -48,14 +48,14 @@ abstract class MutAsyncPod<T> implements AsyncPod<T> {
 
 class _SimpleMutAsyncPod<T> extends MutAsyncPod<T> {
   _SimpleMutAsyncPod({
-    required Future<T> Function(StateRef ref) readFuture,
-    required Future<T> Function(StateRef ref) watchFuture,
-    required AsyncValue<T> Function(StateRef ref) watch,
-    required AsyncValue<T> Function(StateRef ref) read,
-    required Future<void> Function(StateRef ref, T value) update,
-    required Future<void> Function(StateRef ref) reset,
+    required Future<T> Function(PodRef ref) readFuture,
+    required Future<T> Function(PodRef ref) watchFuture,
+    required AsyncValue<T> Function(PodRef ref) watch,
+    required AsyncValue<T> Function(PodRef ref) read,
+    required Future<void> Function(PodRef ref, T value) update,
+    required Future<void> Function(PodRef ref) reset,
     required void Function(
-      StateRef ref,
+      PodRef ref,
       ListenerFunction<AsyncValue<T>> listener,
     ) listen,
   })  : _readFuture = readFuture,
@@ -67,41 +67,41 @@ class _SimpleMutAsyncPod<T> extends MutAsyncPod<T> {
         _listen = listen,
         super._();
 
-  final Future<T> Function(StateRef ref) _readFuture;
-  final AsyncValue<T> Function(StateRef ref) _read;
-  final Future<T> Function(StateRef ref) _watchFuture;
-  final AsyncValue<T> Function(StateRef ref) _watch;
-  final Future<void> Function(StateRef ref, T value) _update;
-  final Future<void> Function(StateRef ref) _reset;
-  final void Function(StateRef ref, ListenerFunction<AsyncValue<T>> listener)
+  final Future<T> Function(PodRef ref) _readFuture;
+  final AsyncValue<T> Function(PodRef ref) _read;
+  final Future<T> Function(PodRef ref) _watchFuture;
+  final AsyncValue<T> Function(PodRef ref) _watch;
+  final Future<void> Function(PodRef ref, T value) _update;
+  final Future<void> Function(PodRef ref) _reset;
+  final void Function(PodRef ref, ListenerFunction<AsyncValue<T>> listener)
       _listen;
 
   @override
-  AsyncValue<T> read(StateRef ref) => _read(ref);
+  AsyncValue<T> read(PodRef ref) => _read(ref);
   @override
-  Future<T> readFuture(StateRef ref) => _readFuture(ref);
+  Future<T> readFuture(PodRef ref) => _readFuture(ref);
 
   @override
-  AsyncValue<T> watch(StateRef ref) => _watch.call(ref);
+  AsyncValue<T> watch(PodRef ref) => _watch.call(ref);
   @override
-  Future<T> watchFuture(StateRef ref) => _watchFuture(ref);
+  Future<T> watchFuture(PodRef ref) => _watchFuture(ref);
 
   @override
-  Future<void> update(StateRef ref, T value) => _update(ref, value);
+  Future<void> update(PodRef ref, T value) => _update(ref, value);
 
   @override
-  Future<void> reset(StateRef ref) => _reset(ref);
+  Future<void> reset(PodRef ref) => _reset(ref);
 
   @override
-  void listen(StateRef ref, ListenerFunction<AsyncValue<T>> listener) =>
+  void listen(PodRef ref, ListenerFunction<AsyncValue<T>> listener) =>
       _listen(ref, listener);
 }
 
 class _RiverpodMutAsyncPod<T> extends MutAsyncPod<T> {
   _RiverpodMutAsyncPod({
-    required Future<T> Function(StateRef) onRead,
-    Future<void> Function(StateRef ref, T value)? onUpdate,
-    Future<void> Function(StateRef ref)? onReset,
+    required Future<T> Function(PodRef) onRead,
+    Future<void> Function(PodRef ref, T value)? onUpdate,
+    Future<void> Function(PodRef ref)? onReset,
   })  : _provider = AutoDisposeAsyncNotifierProvider(
           () => MutAsyncPodNotifier(onRead, onUpdate, onReset),
         ),
@@ -110,27 +110,27 @@ class _RiverpodMutAsyncPod<T> extends MutAsyncPod<T> {
   final AutoDisposeAsyncNotifierProvider<MutAsyncPodNotifier<T>, T> _provider;
 
   @override
-  AsyncValue<T> watch(StateRef ref) => ref.watch(_provider);
+  AsyncValue<T> watch(PodRef ref) => ref.watch(_provider);
   @override
-  Future<T> watchFuture(StateRef ref) => ref.watch(_provider.future);
+  Future<T> watchFuture(PodRef ref) => ref.watch(_provider.future);
 
   @override
-  AsyncValue<T> read(StateRef ref) => ref.read(_provider);
+  AsyncValue<T> read(PodRef ref) => ref.read(_provider);
   @override
-  Future<T> readFuture(StateRef ref) => ref.read(_provider.future);
+  Future<T> readFuture(PodRef ref) => ref.read(_provider.future);
 
   @override
-  Future<void> update(StateRef ref, T value) async {
+  Future<void> update(PodRef ref, T value) async {
     await ref.read(_provider.notifier)._update(value);
   }
 
   @override
-  Future<void> reset(StateRef ref) async {
+  Future<void> reset(PodRef ref) async {
     await ref.read(_provider.notifier)._reset();
   }
 
   @override
-  void listen(StateRef ref, ListenerFunction<AsyncValue<T>> listener) {
+  void listen(PodRef ref, ListenerFunction<AsyncValue<T>> listener) {
     ref.listen(_provider, listener);
   }
 }
@@ -138,9 +138,9 @@ class _RiverpodMutAsyncPod<T> extends MutAsyncPod<T> {
 class MutAsyncPodNotifier<T> extends AutoDisposeAsyncNotifier<T> {
   MutAsyncPodNotifier(this.onRead, this.onUpdate, this.onReset);
 
-  final Future<T> Function(StateRef ref) onRead;
-  final Future<void> Function(StateRef ref, T value)? onUpdate;
-  final Future<void> Function(StateRef ref)? onReset;
+  final Future<T> Function(PodRef ref) onRead;
+  final Future<void> Function(PodRef ref, T value)? onUpdate;
+  final Future<void> Function(PodRef ref)? onReset;
 
   Future<void> _update(T value) async {
     state = AsyncValue.data(value);

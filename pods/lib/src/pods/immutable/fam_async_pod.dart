@@ -3,15 +3,15 @@ import 'package:riverpod/riverpod.dart';
 
 class FamAsyncPod<T, A> {
   FamAsyncPod(
-    Future<T> Function(StateRef ref, A arg) onRead,
+    Future<T> Function(PodRef ref, A arg) onRead,
   ) : _provider =
             AutoDisposeFutureProviderFamily((ref, arg) => onRead(ref.s, arg));
 
   final AutoDisposeFutureProviderFamily<T, A> _provider;
 
-  AsyncValue<T> read(StateRef ref, A arg) => ref.read(_provider(arg));
-  Future<T> readFuture(StateRef ref, A arg) => ref.read(_provider(arg).future);
+  AsyncValue<T> read(PodRef ref, A arg) => ref.read(_provider(arg));
+  Future<T> readFuture(PodRef ref, A arg) => ref.read(_provider(arg).future);
 
-  AsyncValue<T> watch(StateRef ref, A arg) => ref.read(_provider(arg));
-  Future<T> watchFuture(StateRef ref, A arg) => ref.read(_provider(arg).future);
+  AsyncValue<T> watch(PodRef ref, A arg) => ref.read(_provider(arg));
+  Future<T> watchFuture(PodRef ref, A arg) => ref.read(_provider(arg).future);
 }

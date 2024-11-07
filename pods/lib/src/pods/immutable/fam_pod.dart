@@ -7,7 +7,7 @@ class FamPod<T, A> {
 
   final AutoDisposeProviderFamily<T, A> _provider;
 
-  T read(StateRef ref, A arg) => ref.read(_provider(arg));
+  T read(PodRef ref, A arg) => ref.read(_provider(arg));
 
-  T watch(StateRef ref, A arg) => ref.watch(_provider(arg));
+  T watch(PodRef ref, A arg) => ref.watch(_provider(arg));
 }

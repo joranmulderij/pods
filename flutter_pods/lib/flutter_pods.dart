@@ -18,10 +18,10 @@ extension FamAsyncPodExtension<T, A> on FamAsyncPod<T, A> {
 }
 
 extension WidgetRefExtension on WidgetRef {
-  StateRef get s => _WidgetRefStateRef(this);
+  PodRef get s => _WidgetRefStateRef(this);
 }
 
-class _WidgetRefStateRef extends StateRef {
+class _WidgetRefStateRef extends PodRef {
   _WidgetRefStateRef(this._ref);
 
   final WidgetRef _ref;

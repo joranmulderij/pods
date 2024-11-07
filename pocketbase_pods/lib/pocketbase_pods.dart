@@ -24,6 +24,8 @@ ImmutablePod<PocketBase> pocketBasePod(
   });
 }
 
+// class PocketBaseMutableRecordPod<T> extends
+
 MutFamAsyncPod<T, String> pocketBaseMutableRecordPod<T>({
   required String collectionName,
   required T Function(Map<String, dynamic> json) fromJson,

@@ -1,7 +1,7 @@
 import 'package:riverpod/riverpod.dart';
 
-abstract class StateRef {
-  const StateRef();
+abstract class PodRef {
+  const PodRef();
 
   Result read<Result>(ProviderListenable<Result> provider);
 
@@ -13,7 +13,7 @@ abstract class StateRef {
   );
 }
 
-class StateContainer implements StateRef {
+class StateContainer implements PodRef {
   StateContainer() : _container = ProviderContainer();
 
   const StateContainer.fromContainer(this._container);
@@ -37,7 +37,7 @@ class StateContainer implements StateRef {
   }
 }
 
-class _RefPodRef<RefType> implements StateRef {
+class _RefPodRef<RefType> implements PodRef {
   const _RefPodRef(this._ref);
 
   final AutoDisposeRef<RefType> _ref;
@@ -60,7 +60,7 @@ class _RefPodRef<RefType> implements StateRef {
 }
 
 extension RefToPodRef<T> on AutoDisposeRef<T> {
-  StateRef get s {
+  PodRef get s {
     return _RefPodRef<T>(this);
   }
 }
